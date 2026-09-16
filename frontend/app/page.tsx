@@ -330,9 +330,11 @@ export default function Home() {
                 key={room.id}
                 room={room}
                 bookings={getRoomBookings(room.id)}
+                selectedDate={selectedDate}
                 onBook={openBookingForm}
                 onCancel={handleCancelBooking}
                 cancellingId={cancellingId}
+                onError={(message) => showToast(message, "error")}
               />
             ))}
           </div>

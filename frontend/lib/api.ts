@@ -15,6 +15,14 @@ export interface Booking {
   end_time: string;
 }
 
+export interface NextAvailableSlot {
+  room_id: number;
+  date: string;
+  duration_minutes: number;
+  start_time: string;
+  end_time: string;
+}
+
 export interface CreateBookingData {
   room_id: number;
   title: string;
@@ -82,6 +90,23 @@ export async function cancelBooking(
     {
       method: "DELETE",
     }
+  );
+
+  return handleResponse(response);
+}
+
+export async function getNextAvailableSlot(
+  roomId: number,
+  date: string,
+  duration: number
+): Promise<NextAvailableSlot | {message:string}> {
+  const params = new URLSearchParams();
+
+  params.append("date", date);
+  params.append("duration", duration.toString());
+
+  const response = await fetch(
+    `${API_URL}/api/rooms/${roomId}/next-available?${params.toString()}`
   );
 
   return handleResponse(response);
