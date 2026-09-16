@@ -71,75 +71,6 @@ def check_booking_conflict(
             )
 
 
-# # given is existing list of bookings, find the earliest time slot where a new booking of a requested duration can fit.
-# def find_next_available_slot(
-#     bookings: list[Booking],
-#     booking_date: date,
-#     duration_minutes: int
-# ):
-#     if duration_minutes <= 0:
-#         raise HTTPException(
-#             status_code=400,
-#             detail="Duration must be greater than 0 minutes."
-#         )
-
-#     required_duration = timedelta(minutes=duration_minutes)
-
-#     print("duration min: ", duration_minutes)
-#     print("required_duration (converted): ", required_duration)
-
-#     current_time = datetime.combine(
-#         booking_date,          # this will return date -- if bookings is present, then pick the date from 1st booking; else pick date using today()
-#         WORK_START          # this will provide start time
-#     )
-
-#     working_end = datetime.combine(
-#         booking_date, 
-#         WORK_END
-#     )
-
-#     for booking in bookings:
-
-#         booking_start = datetime.combine(
-#             booking.date,
-#             booking.start_time
-#         )
-
-#         booking_end = datetime.combine(
-#             booking.date,
-#             booking.end_time
-#         )
-
-#         # If the free gap before this booking is large enough,
-#         # this is the earliest possible slot.
-#         if booking_start - current_time >= required_duration:
-#             return {
-#                 "start_time": current_time.time(),
-#                 "end_time": (
-#                     current_time + required_duration
-#                 ).time()
-#             }
-
-
-#         if booking_end > current_time:
-#             current_time = booking_end
-
-#     working_end = datetime.combine(
-#         bookings[0].date if bookings else datetime.today().date(),
-#         WORK_END
-#     )
-
-#     if working_end - current_time >= required_duration:
-#         return current_time.time(), (
-#             current_time + required_duration
-#         ).time()
-
-#     return None
-
-
-
-
-
 def find_next_available_slot(
     bookings: list[Booking],
     booking_date: date,
@@ -198,3 +129,21 @@ def find_next_available_slot(
         }
 
     return None
+
+
+def validate_booking_not_in_past(
+    booking_date: date,
+    start_time: time
+):
+    now = datetime.now()
+
+    booking_start = datetime.combine(
+        booking_date,
+        start_time
+    )
+
+    if booking_start < now:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot create a booking for a past date or time."
+        )

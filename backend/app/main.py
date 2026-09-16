@@ -9,6 +9,7 @@ from .booking_logic import (
     check_booking_conflict,
     find_next_available_slot,
     validate_booking_time,
+    validate_booking_not_in_past
 )
 from .database import Base, engine, get_db
 from .schemas import (
@@ -77,6 +78,11 @@ def create_booking(
     validate_booking_time(
         booking.start_time,
         booking.end_time
+    )
+
+    validate_booking_not_in_past(
+        booking.date,
+        booking.start_time
     )
 
     check_booking_conflict(
