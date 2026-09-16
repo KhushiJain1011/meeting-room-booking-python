@@ -84,7 +84,7 @@ def find_next_available_slot(
 
     required_duration = timedelta(minutes=duration_minutes)
 
-    current_time = datetime.combine(
+    working_start = datetime.combine(
         booking_date,
         WORK_START
     )
@@ -93,6 +93,22 @@ def find_next_available_slot(
         booking_date,
         WORK_END
     )
+
+    now = datetime.now()
+
+    # for today, don't suggest slots that have already started; and for future dates, the search can start from the normal working time.
+    if booking_date == now.date():
+        current_time = max(
+            working_start,
+            now.replace(second=0, microsecond=0)
+        )
+    else:
+        current_time = working_start
+
+    # If the current time is already past working hours,
+    # there cannot be another slot today.
+    if current_time >= working_end:
+        return None
 
     for booking in bookings:
         booking_start = datetime.combine(
@@ -105,8 +121,12 @@ def find_next_available_slot(
             booking.end_time
         )
 
-        # The first gap large enough for the requested duration is
-        # automatically the earliest possible available slot.
+        # Ignore bookings that have already ended.
+        if booking_end <= current_time:
+            continue
+
+        # If there is enough free time before this booking,
+        # this is the earliest available slot.
         if booking_start - current_time >= required_duration:
             return {
                 "start_time": current_time.time(),
@@ -118,8 +138,7 @@ def find_next_available_slot(
         if booking_end > current_time:
             current_time = booking_end
 
-    # After checking all existing bookings, there may still be
-    # enough free time before the working day ends.
+    # Check for a free slot after the last booking.
     if working_end - current_time >= required_duration:
         return {
             "start_time": current_time.time(),
@@ -129,7 +148,6 @@ def find_next_available_slot(
         }
 
     return None
-
 
 def validate_booking_not_in_past(
     booking_date: date,
