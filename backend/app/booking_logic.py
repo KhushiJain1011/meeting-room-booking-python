@@ -2,6 +2,7 @@ from datetime import time, datetime, timedelta, timezone, date
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from zoneinfo import ZoneInfo
 
 from .models import Booking
 
@@ -9,7 +10,7 @@ from .models import Booking
 # define start and end timing:
 WORK_START = time(9, 0)
 WORK_END = time(18, 0)
-
+IST = ZoneInfo("Asia/Kolkata")
 
 def validate_booking_time(start_time: time, end_time: time):
     # if end time is before start time or equal to sstart time:
