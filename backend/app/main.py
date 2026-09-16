@@ -27,7 +27,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://meeting-room-booking-python-bxerlowlp.vercel.app"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "https://meeting-room-booking-python-bxerlowlp.vercel.app",
+        "https://meeting-room-booking-python-hsg1omzrj.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
