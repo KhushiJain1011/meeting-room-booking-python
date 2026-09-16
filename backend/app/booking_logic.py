@@ -94,13 +94,17 @@ def find_next_available_slot(
         WORK_END
     )
 
-    now = datetime.now()
+    now = datetime.now(IST).replace(
+        second=0,
+        microsecond=0,
+        tzinfo=None
+    )
 
     # if booking date is today:
     if booking_date == now.date():
         current_time = max(
             working_start,
-            now.replace(second=0, microsecond=0)
+            now
         )
     else:
         current_time = working_start
